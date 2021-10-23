@@ -6,15 +6,15 @@ from MLlib.Trainer import Trainer
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
+import MLlib.DSP as gd 
 
-X = MLlib.DSP.get_data()
-X_distorted = deepcopy(X)
-X_distorted[5000:6000] = 0
 
-net = MLlib.Models.AutoEncoder(X.shape[1])
 
-trainer = Trainer(net)
-error = trainer.train(X, 100, X_distorted)
-
-plt.plot(error)
-plt.show()
+for x in gd.get_data('./Datasets/0/'): 
+    print(x.shape[0])
+    #print(gd.arry2mid(x))  
+    # dada1 = x
+    # data2 = gd.arry2mid(data1)
+    # print(data1)
+    # print(data2)
+    
