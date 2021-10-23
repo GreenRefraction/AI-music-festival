@@ -4,23 +4,15 @@ import numpy as np
 import torch.nn as nn
 from MLlib.Trainer import Trainer
 import matplotlib.pyplot as plt
+import MLlib.DSP as gd 
+
+for x in gd.get_data('./Datasets/0/'): 
+    print(x)
+    print(gd.arry2mid(x))  
+    # dada1 = x
+    # data2 = gd.arry2mid(data1)
+    # print(data1)
+    # print(data2)
+    break
 
 
-
-X = MLlib.DSP.get_data()
-
-
-net = MLlib.Models.AutoEncoder(2)
-
-trainer = Trainer(net)
-trainer.train(sequence, 1000)
-
-preds = torch.Tensor(sequence)
-seq2 = torch.Tensor([np.sin(np.linspace(0,2*np.pi, 100)),
-                np.cos(np.linspace(0,2*np.pi, 100))]).T
-
-seq2_rec = net(seq2)
-seq2_rec = seq2_rec.detach().numpy()
-plt.plot(seq2[:, 0], 'r')
-plt.plot(seq2_rec[:, 0], 'b')
-plt.show()
