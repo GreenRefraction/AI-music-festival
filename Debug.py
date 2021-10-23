@@ -36,8 +36,10 @@ for x in gd.get_data('./Datasets/0/'):
     x_with_hole = remove_chunk(x, 5000, 1000)
 
     y = net(x_input)
-    error = trainer.train(x_input, 10, x_disturbed)
-    plt.plot(error)
+    reconstruction_error, denoising_error = trainer.train(x_input, 10, x_disturbed, x_with_hole)
+    plt.plot(reconstruction_error, label="reconstruction error")
+    plt.plot(denoising_error, label="denoising error")
+    plt.legend()
     plt.show()
     #print(gd.arry2mid(x))  
     # dada1 = x

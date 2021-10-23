@@ -30,4 +30,4 @@ class Trainer():
             
             reconstruction_error.append(reconstruction_loss)
             denoising_error.append(noise_loss)
-        return reconstruction_error
+        return reconstruction_error, denoising_error
