@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 
 import MLlib.DSP as gd 
+import sys
 
 
 net = MLlib.Models.AutoEncoder()
@@ -19,32 +20,33 @@ def noise(x, p=0.01):
     return out
 
 def remove_chunk(x, start, T, end=10000):
-    out = deepcopy(x)
-    end = min(end, start+T)
-    out[start:end] = 0
+    out = deepcopy(x).numpy()
+    end = min(end, start + T)
+    slice1 = torch.Tensor([out[0,:, :start]])
+    slice2 = torch.rand((1, 88, end-start))
+    slice3 = torch.Tensor([out[0, :, end:]])
+    out = torch.cat((slice1, slice2, slice3), dim=2)
     return out
 
 
-for x in gd.get_data('./Datasets/0/'): 
+reconstruction_error = []
+denoising_error = []
+for x in gd.get_training_data('./Datasets/0/', 10000): 
+    x = torch.Tensor([x.T])
     print(x.shape)
-    x = torch.Tensor(x)
-    x_slice = x[:10000].T
-
-    x_input = x_slice.view((1, 88, 10000))
-
-    x_disturbed = noise(x_input)
+    x_disturbed = noise(x)
     x_with_hole = remove_chunk(x, 5000, 1000)
-
-    y = net(x_input)
-    reconstruction_error, denoising_error = trainer.train(x_input, 10, x_disturbed, x_with_hole)
-    plt.plot(reconstruction_error, label="reconstruction error")
-    plt.plot(denoising_error, label="denoising error")
-    plt.legend()
-    plt.show()
+    print(x_with_hole.shape)
+    rec_error, denoise_error = trainer.train(x, 10, x_disturbed, x_with_hole)
+    reconstruction_error.extend(rec_error)
+    denoising_error.extend(denoise_error)
     #print(gd.arry2mid(x))  
     # dada1 = x
     # data2 = gd.arry2mid(data1)
     # print(data1)
     # print(data2)
-    
-    break
+
+plt.plot(reconstruction_error, label="reconstruction error")
+plt.plot(denoising_error, label="denoising error")
+plt.legend()
+plt.show()

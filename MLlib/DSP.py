@@ -4,7 +4,6 @@
 
 # Imports
 import numpy as np
-import matplotlib.pyplot as plt
 # %matplotlib inline
 """import pretty_midi
 import librosa
@@ -115,5 +114,27 @@ def msg2dict(msg):
 def get_data(PATH):
     for file in os.listdir(PATH):
         if file.endswith(".mid"):
-            yield mid2arry(mido.MidiFile(PATH + file))
-    
+            try:
+                yield mid2arry(mido.MidiFile(PATH + file)) 
+            except Exception as e:
+                print('file is bad:', file, e)
+                if os.path.isdir('./diss'):
+                    os.mkdir('./diss')
+                os.rename(PATH + '/' + file, './diss/' + file)
+
+def get_training_data(PATH, window_len):
+    for data in get_data(PATH):
+        for i in range(data.shape[0] - window_len):
+            yield data[i:window_len+i,:]
+
+def filter_data(PATH):
+    print(PATH)
+    for file in os.listdir(PATH):
+        if file.endswith(".mid"):
+            print(file)
+            print(PATH+'/'+file)
+            try:
+                mid2arry(mido.MidiFile(PATH + '/' + file))
+            except:
+                print('file is bad')
+                os.rename(PATH + '/' + file, './diss/' + file)
