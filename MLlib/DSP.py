@@ -4,7 +4,6 @@
 
 # Imports
 import numpy as np
-import matplotlib.pyplot as plt
 # %matplotlib inline
 """import pretty_midi
 import librosa
@@ -75,6 +74,7 @@ def get_new_state(new_msg, last_state):
     new_msg, on_ = msg2dict(str(new_msg))
     new_state = switch_note(last_state, note=new_msg['note'], velocity=new_msg['velocity'], on_=on_) if on_ is not None else last_state
     return [new_state, new_msg['time']]
+
 def track2seq(track):
     # piano has 88 notes, corresponding to note id 21 to 108, any note out of the id range will be ignored
     result = []
@@ -85,6 +85,7 @@ def track2seq(track):
             result += [last_state]*new_time
         last_state, last_time = new_state, new_time
     return result
+
 def switch_note(last_state, note, velocity, on_=True):
     # piano has 88 notes, corresponding to note id 21 to 108, any note out of this range will be ignored
     result = [0] * 88 if last_state is None else last_state.copy()
@@ -113,5 +114,27 @@ def msg2dict(msg):
 def get_data(PATH):
     for file in os.listdir(PATH):
         if file.endswith(".mid"):
-            yield mid2arry(mido.MidiFile(PATH + file))
-    
+            try:
+                yield mid2arry(mido.MidiFile(PATH + file)) 
+            except Exception as e:
+                print('file is bad:', file, e)
+                if os.path.isdir('./diss'):
+                    os.mkdir('./diss')
+                os.rename(PATH + '/' + file, './diss/' + file)
+
+def get_training_data(PATH, window_len):
+    for data in get_data(PATH):
+        for i in range(data.shape[0] - window_len):
+            yield data[i:window_len+i,:]
+
+def filter_data(PATH):
+    print(PATH)
+    for file in os.listdir(PATH):
+        if file.endswith(".mid"):
+            print(file)
+            print(PATH+'/'+file)
+            try:
+                mid2arry(mido.MidiFile(PATH + '/' + file))
+            except:
+                print('file is bad')
+                os.rename(PATH + '/' + file, './diss/' + file)
