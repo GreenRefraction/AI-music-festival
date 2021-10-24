@@ -1,0 +1,103 @@
+<html>
+
+<head>
+    <!-- CSS only -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+        integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/main.css') }}">
+    <title>The State Mind</title>
+</head>
+
+<body>
+    <div id="header" class="container-fluid">
+        <div class="text-center"> 
+            <ul class="list-inline text-right mb-0">
+                <li class="list-inline-item"><a class="social-icon text-xs-center" target="_blank" href="#">FAQ</a></li>
+                <li class="list-inline-item"><a class="btn  btn-lg btn-social btn-github" href="https://github.com/GreenRefraction/State-of-Mind" target="_blank">
+                    <span class="fab fa-github"></span>
+                </a></li>
+             </ul>
+             <div class="title">
+                 <h2 class="text-black">The State Mind</h2><br>
+                 <h6>create a connection between two sounds</h6><br><br>
+             </div>
+        </div>
+    </div>
+    <div id="content mt-10">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="post" action="#" id="#">
+                        <div class="form-group files">
+                            <label>Upload Your MIDI File </label>
+                            <input type="file" class="form-control" multiple="">
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form method="post" action="#" id="#">
+                        <div class="form-group files color">
+                            <label>Upload Your MIDI file </label>
+                            <input type="file" class="form-control" multiple="">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col text-center">
+                    <div id="wait" style="display: none;">Plese wait...</div>
+                    <button id="merge" class="btn btn-secondary" disabled>MERGE</button>
+                </div>
+              </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        // check if both files are uploaded and enable the merge button
+        $(document).ready(function() {
+            $('input[type="file"]').change(function() {
+                $('input[type="file"]').filter(function() {
+                    return $(this).val() != '';
+                }).length == 2 ? $('#merge').prop('disabled', false) : $('#merge').prop('disabled', true);
+            });
+        });
+        
+        // merge the files
+        $(document).ready(function() {
+            $('#merge').click(function() {
+                var formData = new FormData();
+                formData.append('file1', $('input[type="file"]')[0].files[0]);
+                formData.append('file2', $('input[type="file"]')[1].files[0]);
+                $.ajax({
+                    type: 'POST',
+                    url: '/merge',
+                    data: formData,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    beforeSend: function() {
+                        // setting a timeout
+                        $('#merge').prop('disabled', true);
+                        $('#wait').show()
+
+
+                        // $('#progressbar').show();
+                        // $(".progress-bar").animate({
+                        //     width: "100%"
+                        // }, 10000);
+                    },
+                    success: function(data) {
+                        $('#wait').hide()
+                        $('#merge').prop('disabled', false);
+                        window.open('http://127.0.0.1:5000/get-files/merged.mid')
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

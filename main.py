@@ -1,10 +1,23 @@
+<<<<<<< HEAD
+=======
 from os import remove
+>>>>>>> 70490ee7fd6524ca4d50242e8c54110ce5415664
 import torch
 import MLlib
 import numpy as np
 import torch.nn as nn
 from MLlib.Trainer import Trainer
 import matplotlib.pyplot as plt
+<<<<<<< HEAD
+import MLlib.DSP as gd 
+
+
+for one_song in gd.get_data('./Datasets/0/'): 
+    print(one_song)  
+    break
+
+
+=======
 from copy import deepcopy
 import torch.nn as nn
 import MLlib.DSP as gd 
@@ -85,3 +98,4 @@ for x in gd.get_data('./Datasets/0/'):
     plt.show()
     mid.save("test.mid")
     break
+>>>>>>> 70490ee7fd6524ca4d50242e8c54110ce5415664
