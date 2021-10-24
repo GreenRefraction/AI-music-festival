@@ -74,6 +74,7 @@ def get_new_state(new_msg, last_state):
     new_msg, on_ = msg2dict(str(new_msg))
     new_state = switch_note(last_state, note=new_msg['note'], velocity=new_msg['velocity'], on_=on_) if on_ is not None else last_state
     return [new_state, new_msg['time']]
+
 def track2seq(track):
     # piano has 88 notes, corresponding to note id 21 to 108, any note out of the id range will be ignored
     result = []
@@ -84,6 +85,7 @@ def track2seq(track):
             result += [last_state]*new_time
         last_state, last_time = new_state, new_time
     return result
+
 def switch_note(last_state, note, velocity, on_=True):
     # piano has 88 notes, corresponding to note id 21 to 108, any note out of this range will be ignored
     result = [0] * 88 if last_state is None else last_state.copy()
@@ -114,7 +116,7 @@ def get_data(PATH):
         if file.endswith(".mid"):
             try:
                 yield mid2arry(mido.MidiFile(PATH + file)) 
-            except e:
+            except Exception as e:
                 print('file is bad:', file, e)
                 if os.path.isdir('./diss'):
                     os.mkdir('./diss')
