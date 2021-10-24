@@ -49,12 +49,7 @@
             </div>
             <div class="row">
                 <div class="col text-center">
-                    <div class="progress progress-striped active" id="progressbar" style="display: none;">
-                      <div class="progress-bar" role="progressbar" aria-valuenow="0"
-                      aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                        <!-- 0% -->
-                      </div>
-                    </div><br>
+                    <div id="wait" style="display: none;">Plese wait...</div>
                     <button id="merge" class="btn btn-secondary" disabled>MERGE</button>
                 </div>
               </div>
@@ -86,15 +81,18 @@
                     beforeSend: function() {
                         // setting a timeout
                         $('#merge').prop('disabled', true);
-                        $('#progressbar').show();
-                        $(".progress-bar").animate({
-                            width: "100%"
-                        }, 10000);
+                        $('#wait').show()
+
+
+                        // $('#progressbar').show();
+                        // $(".progress-bar").animate({
+                        //     width: "100%"
+                        // }, 10000);
                     },
                     success: function(data) {
-                        console.log(data);
-                        $('#progressbar').hide();
+                        $('#wait').hide()
                         $('#merge').prop('disabled', false);
+                        window.open('http://127.0.0.1:5000/get-files/merged.mid')
                     }
                 });
             });
