@@ -12,12 +12,10 @@ import sys
 
 
 net = MLlib.Models.Net()
-net.state_dict(torch.load("model.pt"))
+net.load_state_dict(torch.load("trained_models_with_logits/sample100.pt"))
+net.eval()
 
-
-for param in net.parameters():
-    print(param.shape)
-trainer = Trainer(net, lr=2-1)
+trainer = Trainer(net, lr=2)
 
 def noise(x, p=0.01):
     mask = torch.rand(x.shape) < p
@@ -55,7 +53,7 @@ for x in gd.get_data('./Datasets/0/'):
     #x_with_hole = remove_chunk(x, 5000, 1000)
 
 
-    rec_error, denoise_error = trainer.train(x_inputs, y_inputs, 5, x_disturbed)
+    rec_error, denoise_error = trainer.train(x_inputs, y_inputs, 1, x_disturbed)
     #reconstruction_error.extend(rec_error)
     denoising_error.extend(denoise_error)
     # print(gd.arry2mid(x))  
@@ -64,8 +62,12 @@ for x in gd.get_data('./Datasets/0/'):
     # print(data1)
     # print(data2)
     iter += 1
-    if iter >= 50:
-        break
+    if iter % 10 == 0:
+        torch.save(net.state_dict(), f"trained_models_with_logits/sample{iter}.pt")
+        print(f"trained_models_with_logits/sample{iter}.pt")
+        plt.plot(denoising_error)
+        plt.savefig("denoising_error.png")
+        plt.close()
 
 
 torch.save(net.state_dict(), "model.pt")

@@ -8,16 +8,14 @@ def mse_loss(y, y_preds):
     return L
 
 def cross_entropy_loss(y, y_preds):
-    eps = 1e-3
-    y = torch.clamp(y, eps, 1-eps)
-    L = -torch.sum(y * torch.log(y_preds) + (1-y)*torch.log(1 - y_preds))
+    L = -torch.sum(y * torch.log(y_preds))/(y.shape[0]*y.shape[1]*y.shape[2])
     return L
 
 class Trainer():
     def __init__(self, model:nn.Module, lr=1e-2) -> None:
         self.optim = optim.SGD(model.parameters(), lr=lr)
         self.model:nn.Module = model
-        self._loss_func = mse_loss
+        self._loss_func = cross_entropy_loss
         self._device = "cpu"
         if torch.cuda.is_available():
             self._device = "cuda"
@@ -38,8 +36,8 @@ class Trainer():
         self.model.to(self._device)
 
         for ep in range(epochs):
-            preds, (h1, c1), (h2, c2) = self.model.forward(data)
-            loss = self._loss_func(preds, target_data)
+            preds, (h1, c1) = self.model.forward(data)
+            loss = self._loss_func(target_data, preds)
             loss.backward()
             print(float(loss))
 
@@ -48,7 +46,7 @@ class Trainer():
 
             # print the reconstruction error and denoising error
             if data_distorted is not None:
-                data_denoised, _, _ = self.model.forward(data_distorted)
+                data_denoised, _ = self.model.forward(data_distorted)
                 noise_loss = float(mse_loss(data, data_denoised))
                 denoising_error.append(noise_loss)
             if data_chunk_removed is not None:
