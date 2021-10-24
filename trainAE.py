@@ -43,19 +43,17 @@ reconstruction_error = []
 denoising_error = []
 iter = 0
 
-for x in gd.get_data('./Datasets/0/'):
-    N = 10000
+for x in gd.get_training_data('./Datasets/0/', 10000):
     x = torch.Tensor([x.T])
-    x_inputs = x[:N]
     #y_inputs = x[1:N+1]
     #x_inputs = torch.Tensor(x_inputs).reshape((1, ssN, 88)).to("cuda")
     #y_inputs = torch.Tensor(y_inputs).reshape((N, 1, 88)).to("cuda")
     #y, (h1, c1), (h2, c2) = net.forward(x)
-    x_disturbed = noise(x_inputs)
+    x_disturbed = noise(x)
     #x_with_hole = remove_chunk(x, 5000, 1000)
 
-
-    rec_error, denoise_error = trainer.train_AE(x_inputs, 5, x_disturbed)
+    print(x.shape)
+    rec_error, denoise_error = trainer.train_AE(x, 1, x_disturbed)
     #reconstruction_error.extend(rec_error)
     denoising_error.extend(denoise_error)
     # print(gd.arry2mid(x))  
