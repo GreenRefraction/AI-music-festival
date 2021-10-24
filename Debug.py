@@ -12,13 +12,13 @@ import sys
 import mido
 
 net = MLlib.Models.Net()
-net.load_state_dict(torch.load("trained_models_with_logits/sample130.pt"))
+net.load_state_dict(torch.load("trained_models_with_logits/sample130.pt", map_location='cpu'))
 net.eval()
 
 
 for param in net.parameters():
     print(param.shape)
-trainer = Trainer(net)
+# trainer = Trainer(net)
 
 def noise(x, p=0.01):
     mask = torch.rand(x.shape) < p
@@ -53,6 +53,7 @@ denoising_error = []
 iter = 0
 
 mid = mido.MidiFile("faded.mid")
+print(mid)
 faded_array = MLlib.DSP.mid2arry(mid)
 """plt.plot(range(faded_array.shape[0]), np.multiply(np.where(faded_array>0, 1, 0), range(1, 89)), marker='.', markersize=1, linestyle='')
 plt.title("Faded, by Alan Walker")
@@ -73,6 +74,14 @@ print(synthesized)
 faded_restored = faded_chunked
 faded_restored[4000:6000] = synthesized
 
+restored_midi = MLlib.DSP.arry2mid(faded_restored, tempo=666667)
+restored_midi.save('./out.mid')
+
 plt.plot(range(faded_restored.shape[0]), np.multiply(np.where(faded_restored>0, 1, 0), range(1, 89)), marker='.', markersize=1, linestyle='')
 plt.title("Faded, by Alan Walker")
 plt.show()
+
+out = MLlib.Merger.merge_midi_matrix(faded_array, faded_array)
+
+restored_midi = MLlib.DSP.arry2mid(out, tempo=666667)
+restored_midi.save('./out2.mid')
